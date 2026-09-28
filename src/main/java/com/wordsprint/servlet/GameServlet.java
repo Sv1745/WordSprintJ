@@ -45,6 +45,10 @@ public class GameServlet extends HttpServlet {
                 getGameDetails(request, response);
                 break;
 
+            case "config":
+                getGameConfig(request, response);
+                break;
+
             default:
                 response.sendError(
                         HttpServletResponse.SC_BAD_REQUEST,
@@ -55,7 +59,27 @@ public class GameServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        getGameDetails(request, response);
+        String action = request.getParameter("action");
+        if ("config".equalsIgnoreCase(action)) {
+            getGameConfig(request, response);
+        } else {
+            getGameDetails(request, response);
+        }
+    }
+
+    private void getGameConfig(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+        com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+
+        response.setContentType("application/json");
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().write(String.format("""
+                {
+                    "success": true,
+                    "maxAttempts": %d,
+                    "maxDailyGames": %d,
+                    "gameEnabled": %b
+                }""", config.getMaxAttempts(), config.getMaxDailyGames(), config.isGameEnabled()));
     }
 
     private void getGameDetails(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -78,6 +102,9 @@ public class GameServlet extends HttpServlet {
 
             java.util.List<com.wordsprint.model.Guess> guesses = guessDAO.findGuessesByGameId(gameId);
 
+            com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+            com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_OK);
 
@@ -87,6 +114,7 @@ public class GameServlet extends HttpServlet {
             sb.append("\"gameId\": ").append(game.getGameId()).append(",");
             sb.append("\"userId\": ").append(game.getUserId()).append(",");
             sb.append("\"status\": \"").append(game.getStatus()).append("\",");
+            sb.append("\"maxAttempts\": ").append(config.getMaxAttempts()).append(",");
             sb.append("\"guesses\": [");
             for (int i = 0; i < guesses.size(); i++) {
                 com.wordsprint.model.Guess g = guesses.get(i);
@@ -133,32 +161,52 @@ public class GameServlet extends HttpServlet {
         }
 
         if (userId == null) {
-            response.sendError(
-                    HttpServletResponse.SC_BAD_REQUEST,
-                    "Missing userId parameter or active login session"
-            );
-            return;
-        }
-
-        com.wordsprint.dao.GameDAO gameDAO = new com.wordsprint.dao.GameDAO();
-        if (gameDAO.getGamesCountToday(userId) >= 3) {
-            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("""
                     {
                         "success": false,
-                        "message": "Daily limit reached! You can only play a maximum of 3 games per day."
+                        "message": "Please log in first to play WordSprint."
                     }""");
+            return;
+        }
+
+        com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+        com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+
+        if (!config.isGameEnabled()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "WordSprint is currently disabled by Admin."
+                    }""");
+            return;
+        }
+
+        com.wordsprint.dao.GameDAO gameDAO = new com.wordsprint.dao.GameDAO();
+        if (gameDAO.getGamesCountToday(userId) >= config.getMaxDailyGames()) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType("application/json");
+            response.getWriter().write(String.format("""
+                    {
+                        "success": false,
+                        "message": "Daily limit reached! You can only play a maximum of %d games per day."
+                    }""", config.getMaxDailyGames()));
             return;
         }
 
         Game game = gameService.startGame(userId);
 
         if (game == null) {
-            response.sendError(
-                    HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Unable to start game"
-            );
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.setContentType("application/json");
+            response.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "Unable to start game. Please try again later."
+                    }""");
             return;
         }
 
@@ -169,8 +217,9 @@ public class GameServlet extends HttpServlet {
                     "success": true,
                     "gameId": %d,
                     "userId": %d,
-                    "status": "%s"
-                }""", game.getGameId(), game.getUserId(), game.getStatus()));
+                    "status": "%s",
+                    "maxAttempts": %d
+                }""", game.getGameId(), game.getUserId(), game.getStatus(), config.getMaxAttempts()));
     }
 
     private void endGame(

@@ -7,7 +7,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const editProfileForm = document.getElementById("edit-profile-form");
     const editUsernameInput = document.getElementById("edit-username");
+    const oldPasswordInput = document.getElementById("old-password");
     const editPasswordInput = document.getElementById("edit-password");
+    const confirmPasswordInput = document.getElementById("confirm-password");
 
     const allGamesList = document.getElementById("all-games-list");
     const logoutButton = document.getElementById("logout-button");
@@ -60,11 +62,25 @@ document.addEventListener("DOMContentLoaded", function () {
             profileRole.textContent = data.role;
             profileCreated.textContent = new Date(data.createdAt).toLocaleDateString();
 
+            if (data.role === "admin") {
+                const nav = document.querySelector("nav");
+                if (nav && !document.getElementById("nav-admin-link")) {
+                    const adminLink = document.createElement("a");
+                    adminLink.id = "nav-admin-link";
+                    adminLink.href = "admin.html";
+                    adminLink.textContent = "Admin Panel";
+                    adminLink.style.color = "var(--accent-orange)";
+                    adminLink.style.fontWeight = "600";
+                    nav.insertBefore(adminLink, nav.firstChild);
+                }
+            }
+
             // Render All Games History
             if (!data.games || data.games.length === 0) {
-                allGamesList.innerHTML = `<p style="color: #6c757d;">No games played yet.</p>`;
+                allGamesList.innerHTML = `<p style="color: var(--text-muted);">No games played yet.</p>`;
             } else {
                 let html = `
+                    <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -85,7 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     let actionHtml = "-";
                     if (g.status === "IN_PROGRESS") {
-                        actionHtml = `<a href="game.html?gameId=${g.gameId}" class="btn btn-primary btn-sm">▶ Resume</a>`;
+                        actionHtml = `<a href="game.html?gameId=${g.gameId}" class="btn btn-primary btn-sm">Resume</a>`;
                     }
 
                     html += `
@@ -98,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 allGamesList.innerHTML = html;
             }
 
@@ -112,12 +128,33 @@ document.addEventListener("DOMContentLoaded", function () {
             event.preventDefault();
             clearMessages();
 
-            const newUsername = editUsernameInput.value.trim();
-            const newPassword = editPasswordInput.value.trim();
+            const newUsername = editUsernameInput ? editUsernameInput.value.trim() : "";
+            const oldPassword = oldPasswordInput ? oldPasswordInput.value.trim() : "";
+            const newPassword = editPasswordInput ? editPasswordInput.value.trim() : "";
+            const confirmPassword = confirmPasswordInput ? confirmPasswordInput.value.trim() : "";
 
-            if (!newUsername && !newPassword) {
-                showError("Please enter a new username or password to update.");
+            if (!newUsername && !oldPassword && !newPassword && !confirmPassword) {
+                showError("Please enter a new username or password details to update.");
                 return;
+            }
+
+            if (oldPassword || newPassword || confirmPassword) {
+                if (!oldPassword) {
+                    showError("Please enter your current (old) password.");
+                    return;
+                }
+                if (!newPassword) {
+                    showError("Please enter a new password.");
+                    return;
+                }
+                if (!confirmPassword) {
+                    showError("Please confirm your new password.");
+                    return;
+                }
+                if (newPassword !== confirmPassword) {
+                    showError("New password and confirm password do not match!");
+                    return;
+                }
             }
 
             try {
@@ -128,7 +165,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
                     body: new URLSearchParams({
                         username: newUsername,
-                        password: newPassword
+                        oldPassword: oldPassword,
+                        newPassword: newPassword,
+                        confirmPassword: confirmPassword
                     })
                 });
 
@@ -136,8 +175,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (response.ok && data.success) {
                     showSuccess(data.message || "Profile updated successfully!");
-                    editUsernameInput.value = "";
-                    editPasswordInput.value = "";
+                    if (editUsernameInput) editUsernameInput.value = "";
+                    if (oldPasswordInput) oldPasswordInput.value = "";
+                    if (editPasswordInput) editPasswordInput.value = "";
+                    if (confirmPasswordInput) confirmPasswordInput.value = "";
                     loadProfile();
                 } else {
                     showError(data.message || "Failed to update profile.");

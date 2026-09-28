@@ -12,7 +12,7 @@
     <header>
         <h1>WordSprint</h1>
         <nav>
-            <a href="dashboard.html">Dashboard</a>
+            <a href="dashboard.html" class="active">Dashboard</a>
             <a href="game.html">Play Game</a>
             <a href="profile.html">Profile</a>
             <button id="logout-button" class="btn btn-danger">Logout</button>
@@ -23,7 +23,7 @@
         <div class="card" style="max-width: 800px;">
             <div class="game-header">
                 <h2>User Dashboard</h2>
-                <span id="user-welcome" style="font-weight: 600; color: #2c3e50;">Welcome!</span>
+                <span id="user-welcome" style="font-weight: 600; color: var(--accent-blue);">Welcome!</span>
             </div>
 
             <div id="error-message" class="error-message"></div>
@@ -36,37 +36,37 @@
                     <span class="stat-label">Total Games</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-num" id="stat-wins" style="color: #2ecc71;">0</span>
+                    <span class="stat-num" id="stat-wins" style="color: var(--accent-green);">0</span>
                     <span class="stat-label">Wins</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-num" id="stat-losses" style="color: #e74c3c;">0</span>
+                    <span class="stat-num" id="stat-losses" style="color: var(--accent-red);">0</span>
                     <span class="stat-label">Losses</span>
                 </div>
                 <div class="stat-card">
-                    <span class="stat-num" id="stat-inprogress" style="color: #f1c40f;">0</span>
+                    <span class="stat-num" id="stat-inprogress" style="color: var(--accent-orange);">0</span>
                     <span class="stat-label">In-Progress</span>
                 </div>
             </div>
 
             <div class="button-group" style="margin-bottom: 2rem;">
-                <a href="game.html" class="btn btn-primary"> Start New Game</a>
-                <a href="profile.html" class="btn btn-secondary"> View Profile</a>
+                <a href="game.html" class="btn btn-primary">Start New Game</a>
+                <a href="profile.html" class="btn btn-secondary">View Profile</a>
             </div>
 
             <!-- Active / Unfinished Games Section -->
             <section style="margin-top: 1.5rem;">
-                <h3 style="margin-bottom: 0.75rem; color: #2c3e50;">Active & Unfinished Games</h3>
+                <h3 style="margin-bottom: 0.75rem; color: var(--text-main); font-size: 1.1rem; font-weight: 700;">Active & Unfinished Games</h3>
                 <div id="active-games-list">
-                    <p style="color: #777;">Loading games...</p>
+                    <p style="color: var(--text-muted);">Loading games...</p>
                 </div>
             </section>
 
             <!-- Recent Finished Games Section -->
             <section style="margin-top: 2rem;">
-                <h3 style="margin-bottom: 0.75rem; color: #2c3e50;">Recent Game History</h3>
+                <h3 style="margin-bottom: 0.75rem; color: var(--text-main); font-size: 1.1rem; font-weight: 700;">Recent Game History</h3>
                 <div id="finished-games-list">
-                    <p style="color: #777;">Loading history...</p>
+                    <p style="color: var(--text-muted);">Loading history...</p>
                 </div>
             </section>
         </div>

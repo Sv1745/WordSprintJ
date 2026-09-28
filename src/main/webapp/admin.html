@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordSprint - Admin Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>WordSprint Admin</h1>
+        <nav>
+            <a href="admin.html" class="active">Admin Panel</a>
+            <a href="dashboard.html">Player View</a>
+            <a href="profile.html">Profile</a>
+            <button id="logout-button" class="btn btn-danger">Logout</button>
+        </nav>
+    </header>
+
+    <main style="align-items: flex-start; padding-top: 2rem;">
+        <div class="card" style="max-width: 850px;">
+            <div class="game-header">
+                <h2>Admin Dashboard & Reports</h2>
+                <span style="font-weight: 600; color: var(--accent-red); font-size: 0.85rem; letter-spacing: 0.5px;">[ADMIN CONTROL]</span>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- Overview Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-players">0</span>
+                    <span class="stat-label">Total Players</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-admins" style="color: #a855f7;">0</span>
+                    <span class="stat-label">Admins</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-games">0</span>
+                    <span class="stat-label">Total Games</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-won" style="color: var(--accent-green);">0</span>
+                    <span class="stat-label">Won Games</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-lost" style="color: var(--accent-red);">0</span>
+                    <span class="stat-label">Lost Games</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-num" id="stat-progress" style="color: var(--accent-orange);">0</span>
+                    <span class="stat-label">In-Progress</span>
+                </div>
+            </div>
+
+            <!-- Game Configuration Form -->
+            <section style="background: var(--input-bg); border: 1px solid var(--card-border); border-radius: 10px; padding: 1.5rem; margin-top: 1.5rem;">
+                <h3 style="color: var(--text-main); margin-bottom: 1rem; font-size: 1.1rem; font-weight: 700;">Game Configuration</h3>
+                <form id="config-form" class="form">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="max-attempts">Max Attempts per Game</label>
+                            <input type="number" id="max-attempts" name="maxAttempts" min="1" max="10" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="max-daily">Max Daily Games per User</label>
+                            <input type="number" id="max-daily" name="maxDailyGames" min="1" max="50" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="flex-direction: row; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
+                        <input type="checkbox" id="game-enabled" name="gameEnabled" style="width: auto;">
+                        <label for="game-enabled" style="margin-bottom: 0;">Enable Game for Players</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="align-self: flex-start; margin-top: 0.5rem;">Save Configuration</button>
+                </form>
+            </section>
+
+            <!-- Reports Sections -->
+            <section style="margin-top: 2rem;">
+                <h3 style="color: var(--text-main); margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 700;">Daily Activity Report (Date, Users, Correct Guesses)</h3>
+                <div id="daily-reports-container" class="table-responsive">
+                    <p style="color: var(--text-muted);">Loading daily report...</p>
+                </div>
+            </section>
+
+            <section style="margin-top: 2rem;">
+                <h3 style="color: var(--text-main); margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 700;">User Activity Report (User, Date, Words Tried, Correct Guesses)</h3>
+                <div id="user-daily-reports-container" class="table-responsive">
+                    <p style="color: var(--text-muted);">Loading user daily report...</p>
+                </div>
+            </section>
+
+            <section style="margin-top: 2rem;">
+                <h3 style="color: var(--text-main); margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 700;">Overall User Directory & Summary</h3>
+                <div id="player-reports-container" class="table-responsive">
+                    <p style="color: var(--text-muted);">Loading player directory...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 WordSprint. Java Web Application.</p>
+    </footer>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

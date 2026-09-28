@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Current active game state
     let currentGameId = null;
     let currentAttempt = 0;
+    let maxAttempts = 6;
 
     // DOM Elements
     const startGameButton = document.getElementById("start-game-button");
@@ -12,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutButton = document.getElementById("logout-button");
 
     const attemptCountText = document.getElementById("attempt-count");
+    const maxAttemptsCountText = document.getElementById("max-attempts-count");
     const gameStatusText = document.getElementById("game-status");
     const errorMessage = document.getElementById("error-message");
     const successMessage = document.getElementById("success-message");
@@ -47,17 +49,51 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Reset the 6x5 game board grid
-    function resetBoard() {
-        const rows = document.querySelectorAll(".board-row");
-        rows.forEach(row => {
-            const tiles = row.querySelectorAll(".tile");
-            tiles.forEach(tile => {
-                tile.textContent = "";
-                tile.className = "tile";
-            });
-        });
+    // Render/Reset the game board grid dynamically based on maxAttempts
+    function renderBoard(maxAttemptsNum) {
+        if (maxAttemptsNum) {
+            maxAttempts = maxAttemptsNum;
+        }
+        if (maxAttemptsCountText) {
+            maxAttemptsCountText.textContent = maxAttempts;
+        }
+
+        const boardContainer = document.getElementById("game-board");
+        if (!boardContainer) return;
+
+        boardContainer.innerHTML = "";
+        for (let r = 1; r <= maxAttempts; r++) {
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "board-row";
+            rowDiv.setAttribute("data-row", r);
+
+            for (let t = 0; t < 5; t++) {
+                const tileDiv = document.createElement("div");
+                tileDiv.className = "tile";
+                rowDiv.appendChild(tileDiv);
+            }
+            boardContainer.appendChild(rowDiv);
+        }
     }
+
+    // Initial board render with default maxAttempts (6)
+    renderBoard(maxAttempts);
+
+    // Fetch live game config on page load to update maxAttempts immediately
+    async function fetchInitialConfig() {
+        try {
+            const response = await fetch("/wordsprint/game?action=config");
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.maxAttempts) {
+                    renderBoard(data.maxAttempts);
+                }
+            }
+        } catch (e) {
+            // Silence error
+        }
+    }
+    fetchInitialConfig();
 
     // Update a specific row on the board with guess letters and feedback colors
     function updateRow(rowNumber, guessWord, resultFeedback) {
@@ -108,7 +144,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 currentGameId = data.gameId;
                 currentAttempt = 0;
 
-                resetBoard();
+                if (data.maxAttempts) {
+                    maxAttempts = data.maxAttempts;
+                }
+                renderBoard(maxAttempts);
+
                 attemptCountText.textContent = "0";
                 gameStatusText.textContent = "IN_PROGRESS";
 
@@ -119,16 +159,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 showSuccess("Game started! Make your first guess.");
             } else if (response.status === 403) {
-                showError(data.message || "Daily limit reached! You can only play a maximum of 3 games per day.");
-            } else if (response.status === 400 || response.status === 401) {
+                showError(data.message || "Daily game limit reached for today.");
+            } else if (response.status === 401) {
                 showError(data.message || "Please log in first to play WordSprint.");
                 setTimeout(() => window.location.href = "login.html", 1500);
             } else {
-                showError(data.message || "Unable to start game. Please log in first.");
+                showError(data.message || "Unable to start game. Please try again.");
             }
         } catch (error) {
-            showError("Please log in first to play WordSprint.");
-            setTimeout(() => window.location.href = "login.html", 1500);
+            showError("Network or server error while starting game.");
         }
     }
 
@@ -172,23 +211,36 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (response.ok && data.success) {
+                if (data.maxAttempts) {
+                    maxAttempts = data.maxAttempts;
+                    if (maxAttemptsCountText) {
+                        maxAttemptsCountText.textContent = maxAttempts;
+                    }
+                }
+
                 updateRow(currentAttempt, guessWord, data.result);
                 attemptCountText.textContent = currentAttempt;
                 guessInput.value = "";
 
                 if (data.status === "WON") {
                     gameStatusText.textContent = "WON";
-                    showSuccess("🎉 Congratulations! You guessed the secret word!");
+                    showSuccess("Congratulations! You guessed the secret word!");
                     guessForm.style.display = "none";
                     startSection.style.display = "flex";
                     startGameButton.textContent = "Play Again";
+                    setTimeout(() => {
+                        alert("Congratulations! You guessed the secret word!");
+                    }, 100);
                 } else if (data.status === "LOST") {
                     gameStatusText.textContent = "LOST";
                     const target = data.targetWord ? ` The word was: ${data.targetWord}` : "";
-                    showError(`❌ Game Over! You've used all 6 attempts.${target}`);
+                    showError(`Better luck next time!${target}`);
                     guessForm.style.display = "none";
                     startSection.style.display = "flex";
                     startGameButton.textContent = "Try Again";
+                    setTimeout(() => {
+                        alert(`Better luck next time!${target}`);
+                    }, 100);
                 } else {
                     guessInput.focus();
                 }
@@ -241,7 +293,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok && data.success) {
                 currentGameId = data.gameId;
                 currentAttempt = 0;
-                resetBoard();
+
+                if (data.maxAttempts) {
+                    maxAttempts = data.maxAttempts;
+                }
+                renderBoard(maxAttempts);
 
                 if (data.guesses && data.guesses.length > 0) {
                     data.guesses.forEach(g => {
@@ -258,7 +314,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     startSection.style.display = "none";
                     guessInput.value = "";
                     guessInput.focus();
-                    showSuccess(`Resumed Game #${currentGameId}. ${6 - currentAttempt} attempts remaining.`);
+                    showSuccess(`Resumed Game #${currentGameId}. ${maxAttempts - currentAttempt} attempts remaining.`);
                 } else {
                     guessForm.style.display = "none";
                     startSection.style.display = "flex";

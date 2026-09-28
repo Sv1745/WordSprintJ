@@ -22,7 +22,9 @@ public class GameService {
             return null;
         }
 
-        if (gameDAO.getGamesCountToday(userId) >= 3) {
+        com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+        com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+        if (gameDAO.getGamesCountToday(userId) >= config.getMaxDailyGames()) {
             System.err.println("Daily limit reached for user ID " + userId);
             return null;
         }

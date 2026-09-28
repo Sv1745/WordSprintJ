@@ -12,7 +12,7 @@
         <nav>
             <a href="dashboard.html">Dashboard</a>
             <a href="game.html">Play Game</a>
-            <a href="profile.html">Profile</a>
+            <a href="profile.html" class="active">Profile</a>
             <button id="logout-button" class="btn btn-danger">Logout</button>
         </nav>
     </header>
@@ -25,7 +25,7 @@
             <div id="success-message" class="success-message"></div>
 
             <!-- Profile Info Display -->
-            <div class="profile-info-box" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 1.25rem; margin: 1rem 0;">
+            <div class="profile-info-box">
                 <p><strong>Username:</strong> <span id="profile-uname">Loading...</span></p>
                 <p><strong>Role:</strong> <span id="profile-role">Loading...</span></p>
                 <p><strong>Member Since:</strong> <span id="profile-created">Loading...</span></p>
@@ -33,18 +33,28 @@
 
             <!-- Edit Profile Form -->
             <form id="edit-profile-form" class="form" style="margin-top: 1.5rem;">
-                <h3 style="color: #2c3e50;">Edit Profile Details</h3>
+                <h3 style="color: var(--text-main); font-size: 1.1rem; font-weight: 700;">Edit Profile & Password</h3>
 
                 <div class="form-group">
                     <label for="edit-username">New Username (Optional)</label>
                     <input type="text" id="edit-username" name="username" placeholder="Leave blank to keep current">
-                    <small style="color: #666; font-size: 0.8rem;">Min 5 characters (uppercase & lowercase letters)</small>
+                    <small style="color: var(--text-muted); font-size: 0.8rem;">Min 5 characters (uppercase & lowercase letters)</small>
                 </div>
 
                 <div class="form-group">
-                    <label for="edit-password">New Password (Optional)</label>
-                    <input type="password" id="edit-password" name="password" placeholder="Leave blank to keep current">
-                    <small style="color: #666; font-size: 0.8rem;">Min 5 characters (letters, numbers, & special char: $, %, *, @, #, !, &)</small>
+                    <label for="old-password">Old Password (Required to change password)</label>
+                    <input type="password" id="old-password" name="oldPassword" placeholder="Enter current password">
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-password">New Password</label>
+                    <input type="password" id="edit-password" name="newPassword" placeholder="Enter new password">
+                    <small style="color: var(--text-muted); font-size: 0.8rem;">Min 5 characters (letters, numbers, & special char: $, %, *, @, #, !, &)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm-password">Confirm New Password</label>
+                    <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm new password">
                 </div>
 
                 <button type="submit" class="btn btn-primary">Save Profile Changes</button>
@@ -52,9 +62,9 @@
 
             <!-- All Games List -->
             <section style="margin-top: 2rem;">
-                <h3 style="color: #2c3e50; margin-bottom: 0.75rem;">All Played Games</h3>
+                <h3 style="color: var(--text-main); margin-bottom: 0.75rem; font-size: 1.1rem; font-weight: 700;">All Played Games</h3>
                 <div id="all-games-list">
-                    <p style="color: #777;">Loading game history...</p>
+                    <p style="color: var(--text-muted);">Loading game history...</p>
                 </div>
             </section>
         </div>

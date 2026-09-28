@@ -92,27 +92,100 @@ public class ProfileServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("user_id") == null) {
-            res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Please log in first");
+            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            res.setContentType("application/json");
+            res.getWriter().write("""
+                    {
+                        "success": false,
+                        "message": "Please log in first"
+                    }""");
             return;
         }
 
         Long userId = (Long) session.getAttribute("user_id");
         String newUsername = req.getParameter("username");
-        String newPassword = req.getParameter("password");
+        String oldPassword = req.getParameter("oldPassword");
+        String newPassword = req.getParameter("newPassword");
+        if (newPassword == null) {
+            newPassword = req.getParameter("password");
+        }
+        String confirmPassword = req.getParameter("confirmPassword");
 
         String pwdHash = null;
-        if (newPassword != null && !newPassword.trim().isEmpty()) {
-            if (newPassword.length() < 5 || !newPassword.matches(".*[A-Za-z].*") || !newPassword.matches(".*\\d.*") || !newPassword.matches(".*[$%*@#&!].*")) {
+        boolean isPasswordChange = (oldPassword != null && !oldPassword.trim().isEmpty()) ||
+                                  (newPassword != null && !newPassword.trim().isEmpty()) ||
+                                  (confirmPassword != null && !confirmPassword.trim().isEmpty());
+
+        if (isPasswordChange) {
+            if (oldPassword == null || oldPassword.trim().isEmpty()) {
                 res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 res.setContentType("application/json");
                 res.getWriter().write("""
                         {
                             "success": false,
-                            "message": "Password must be at least 5 characters and contain letters, numbers, and special chars ($, %, *, @, #, !, &)"
+                            "message": "Old password is required to change password."
                         }""");
                 return;
             }
-            pwdHash = pwdUtil.hashPassword(newPassword.trim());
+
+            if (newPassword == null || newPassword.trim().isEmpty()) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("application/json");
+                res.getWriter().write("""
+                        {
+                            "success": false,
+                            "message": "New password is required."
+                        }""");
+                return;
+            }
+
+            if (confirmPassword == null || confirmPassword.trim().isEmpty()) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("application/json");
+                res.getWriter().write("""
+                        {
+                            "success": false,
+                            "message": "Please confirm your new password."
+                        }""");
+                return;
+            }
+
+            if (!newPassword.trim().equals(confirmPassword.trim())) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("application/json");
+                res.getWriter().write("""
+                        {
+                            "success": false,
+                            "message": "New password and confirm password do not match!"
+                        }""");
+                return;
+            }
+
+            User currentUser = userDAO.findById(userId);
+            if (currentUser == null || !PasswordUtil.verifyPassword(oldPassword.trim(), currentUser.getPasswordHash())) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("application/json");
+                res.getWriter().write("""
+                        {
+                            "success": false,
+                            "message": "Current (old) password is incorrect!"
+                        }""");
+                return;
+            }
+
+            String np = newPassword.trim();
+            if (np.length() < 5 || !np.matches(".*[A-Za-z].*") || !np.matches(".*\\d.*") || !np.matches(".*[$%*@#&!].*")) {
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.setContentType("application/json");
+                res.getWriter().write("""
+                        {
+                            "success": false,
+                            "message": "New password must be at least 5 characters and contain letters, numbers, and special chars ($, %, *, @, #, !, &)"
+                        }""");
+                return;
+            }
+
+            pwdHash = PasswordUtil.hashPassword(np);
         }
 
         if (newUsername != null && !newUsername.trim().isEmpty()) {

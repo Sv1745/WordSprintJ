@@ -14,13 +14,13 @@
         <nav>
             <a href="index.html">Home</a>
             <a href="login.html">Login</a>
-            <a href="register.html">Register</a>
+            <a href="register.html" class="active">Register</a>
         </nav>
     </header>
 
     <main>
         <section class="card">
-            <h2>Create Account</h2>
+            <h2>User Registration</h2>
 
             <div id="error-message" class="error-message"></div>
             <div id="success-message" class="success-message"></div>
@@ -28,35 +28,27 @@
             <form id="register-form" class="form">
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" required autocomplete="username" placeholder="e.g. TestUser">
-                    <small style="color: #666; font-size: 0.8rem;">At least 5 characters (must include uppercase and lowercase letters)</small>
+                    <input type="text" id="username" name="username" required autocomplete="username">
+                    <small style="color: var(--text-muted); font-size: 0.8rem;">Min 5 letters (must contain both uppercase & lowercase)</small>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input type="password" id="password" name="password" required autocomplete="new-password" placeholder="e.g. Pass123*">
-                    <small style="color: #666; font-size: 0.8rem;">At least 5 characters (letters, numbers, & special char: $, %, *, @, #, !, &)</small>
+                    <input type="password" id="password" name="password" required autocomplete="new-password">
+                    <small style="color: var(--text-muted); font-size: 0.8rem;">Min 5 characters (letters, numbers, & special char: $, %, *, @, #, !, &)</small>
                 </div>
 
-                <div class="form-group">
-                    <label for="role">Role</label>
-                    <select id="role" name="role" required>
-                        <option value="player" selected>Player</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-
-                <button type="submit" class="btn btn-primary">Register</button>
+                <button type="submit" class="btn btn-primary">Create Account</button>
             </form>
 
             <div class="button-group">
-                <p>Already have an account? <a href="login.html">Log in here</a></p>
+                <p style="color: var(--text-muted); font-size: 0.95rem;">Already have an account? <a href="login.html" style="color: var(--accent-blue);">Login here</a></p>
             </div>
         </section>
     </main>
 
     <footer>
-        <p>WordSprint. Java Web Application.</p>
+        <p>&copy; 2026 WordSprint. Java Web Application.</p>
     </footer>
 
     <script src="js/auth.js"></script>

@@ -37,6 +37,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Render User Header & Stats
             userWelcome.textContent = `Welcome, ${data.username}!`;
+            if (data.role === "admin") {
+                const nav = document.querySelector("nav");
+                if (nav && !document.getElementById("nav-admin-link")) {
+                    const adminLink = document.createElement("a");
+                    adminLink.id = "nav-admin-link";
+                    adminLink.href = "admin.html";
+                    adminLink.textContent = "Admin Panel";
+                    adminLink.style.color = "var(--accent-orange)";
+                    adminLink.style.fontWeight = "600";
+                    nav.insertBefore(adminLink, nav.firstChild);
+                }
+            }
+
             statTotal.textContent = data.stats.totalGames;
             statWins.textContent = data.stats.wins;
             statLosses.textContent = data.stats.losses;
@@ -48,9 +61,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Render Active / Unfinished Games
             if (activeGames.length === 0) {
-                activeGamesList.innerHTML = `<p style="color: #6c757d;">No active games in progress. Click 'Start New Game' to play!</p>`;
+                activeGamesList.innerHTML = `<p style="color: var(--text-muted);">No active games in progress. Click 'Start New Game' to play!</p>`;
             } else {
                 let html = `
+                    <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -71,21 +85,22 @@ document.addEventListener("DOMContentLoaded", function () {
                             <td>${startedDate}</td>
                             <td><span class="badge badge-progress">IN PROGRESS</span></td>
                             <td>
-                                <a href="game.html?gameId=${g.gameId}" class="btn btn-primary btn-sm">▶ Resume Game</a>
+                                <a href="game.html?gameId=${g.gameId}" class="btn btn-primary btn-sm">Resume Game</a>
                             </td>
                         </tr>
                     `;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 activeGamesList.innerHTML = html;
             }
 
             // Render Recent Finished Games
             if (finishedGames.length === 0) {
-                finishedGamesList.innerHTML = `<p style="color: #6c757d;">No completed games yet.</p>`;
+                finishedGamesList.innerHTML = `<p style="color: var(--text-muted);">No completed games yet.</p>`;
             } else {
                 let html = `
+                    <div class="table-responsive">
                     <table class="data-table">
                         <thead>
                             <tr>
@@ -113,7 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     `;
                 });
 
-                html += `</tbody></table>`;
+                html += `</tbody></table></div>`;
                 finishedGamesList.innerHTML = html;
             }
 

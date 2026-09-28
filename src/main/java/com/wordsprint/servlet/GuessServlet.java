@@ -93,11 +93,15 @@ public class GuessServlet extends HttpServlet {
 
             gameService.recordGuess(gameId, guessNumber, userGuess, result);
 
+            com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+            com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+            int maxAttempts = config.getMaxAttempts();
+
             String status = "IN_PROGRESS";
             if (isCorrect) {
                 status = "WON";
                 gameService.endGame(gameId, status);
-            } else if (guessNumber >= 5) {
+            } else if (guessNumber >= maxAttempts) {
                 status = "LOST";
                 gameService.endGame(gameId, status);
             }
@@ -110,7 +114,8 @@ public class GuessServlet extends HttpServlet {
             json.append("\"success\": true,");
             json.append("\"isCorrect\": ").append(isCorrect).append(",");
             json.append("\"result\": \"").append(result).append("\",");
-            json.append("\"status\": \"").append(status).append("\"");
+            json.append("\"status\": \"").append(status).append("\",");
+            json.append("\"maxAttempts\": ").append(maxAttempts);
             if (isCorrect || "LOST".equals(status)) {
                 json.append(",\"targetWord\": \"").append(targetWord).append("\"");
             }

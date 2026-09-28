@@ -14,7 +14,7 @@
         <nav>
             <a href="dashboard.html">Dashboard</a>
             <a href="profile.html">Profile</a>
-            <a href="game.html">Play Game</a>
+            <a href="game.html" class="active">Play Game</a>
             <button id="logout-button" class="btn btn-danger">Logout</button>
         </nav>
     </header>
@@ -24,7 +24,7 @@
             <div class="game-header">
                 <h2>Play WordSprint</h2>
                 <div class="game-info">
-                    <span>Attempts: <span id="attempt-count">0</span>/6</span>
+                    <span>Attempts: <span id="attempt-count">0</span>/<span id="max-attempts-count"></span></span>
                     <span>Status: <span id="game-status">IDLE</span></span>
                 </div>
             </div>
@@ -37,44 +37,8 @@
                 <button id="start-game-button" class="btn btn-primary">Start New Game</button>
             </div>
 
-            <!-- Game Grid Board (6 rows x 5 tiles) -->
-            <div id="game-board" class="game-board">
-                <div class="board-row" data-row="1">
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                </div>
-                <div class="board-row" data-row="2">
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                </div>
-                <div class="board-row" data-row="3">
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                </div>
-                <div class="board-row" data-row="4">
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                </div>
-                <div class="board-row" data-row="5">
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                    <div class="tile"></div>
-                </div>
-            </div>
+            <!-- Game Grid Board (Dynamically populated by JS) -->
+            <div id="game-board" class="game-board"></div>
 
             <!-- Guess Submission Form -->
             <form id="guess-form" class="form" style="display: none;">
@@ -89,7 +53,7 @@
     </main>
 
     <footer>
-        <p>WordSprint. Java Web Application.</p>
+        <p>&copy; 2026 WordSprint. Java Web Application.</p>
     </footer>
 
     <script src="js/game.js"></script>
