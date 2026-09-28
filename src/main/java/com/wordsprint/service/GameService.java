@@ -30,7 +30,9 @@ public class GameService {
         game.setStartedAt(LocalDateTime.now());
         game.setStatus("IN_PROGRESS");
 
-        gameDAO.createGame(game);
+        if (!gameDAO.createGame(game)) {
+            return null;
+        }
 
         return game;
     }
@@ -62,8 +64,13 @@ public class GameService {
         return guessDAO.createGuess(guess);
     }
 
-    public boolean endGame(Long gameId, boolean won) {
-        String status = won ? "WON" : "LOST";
+    public boolean endGame(Long gameId, String status) {
+
+        if (status == null ||
+                (!status.equals("WON") && !status.equals("LOST"))) {
+            return false;
+        }
+
         return gameDAO.updateGameStatus(gameId, status);
     }
 }
