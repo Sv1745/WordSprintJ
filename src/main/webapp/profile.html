@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordSprint - Profile</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>WordSprint</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="game.html">Play Game</a>
+            <a href="profile.html">Profile</a>
+            <button id="logout-button" class="btn btn-danger">Logout</button>
+        </nav>
+    </header>
+
+    <main style="align-items: flex-start; padding-top: 2rem;">
+        <div class="card" style="max-width: 650px;">
+            <h2>User Profile</h2>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- Profile Info Display -->
+            <div class="profile-info-box" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 1.25rem; margin: 1rem 0;">
+                <p><strong>Username:</strong> <span id="profile-uname">Loading...</span></p>
+                <p><strong>Role:</strong> <span id="profile-role">Loading...</span></p>
+                <p><strong>Member Since:</strong> <span id="profile-created">Loading...</span></p>
+            </div>
+
+            <!-- Edit Profile Form -->
+            <form id="edit-profile-form" class="form" style="margin-top: 1.5rem;">
+                <h3 style="color: #2c3e50;">Edit Profile Details</h3>
+
+                <div class="form-group">
+                    <label for="edit-username">New Username (Optional)</label>
+                    <input type="text" id="edit-username" name="username" placeholder="Leave blank to keep current">
+                    <small style="color: #666; font-size: 0.8rem;">Min 5 characters (uppercase & lowercase letters)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="edit-password">New Password (Optional)</label>
+                    <input type="password" id="edit-password" name="password" placeholder="Leave blank to keep current">
+                    <small style="color: #666; font-size: 0.8rem;">Min 5 characters (letters, numbers, & special char: $, %, *, @, #, !, &)</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+            </form>
+
+            <!-- All Games List -->
+            <section style="margin-top: 2rem;">
+                <h3 style="color: #2c3e50; margin-bottom: 0.75rem;">All Played Games</h3>
+                <div id="all-games-list">
+                    <p style="color: #777;">Loading game history...</p>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 WordSprint. Java Web Application.</p>
+    </footer>
+
+    <script src="js/profile.js"></script>
+</body>
+</html>

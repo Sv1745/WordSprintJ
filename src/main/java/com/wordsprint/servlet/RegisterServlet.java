@@ -32,6 +32,19 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+        String validationError = authService.validateCredentials(username, password);
+        if (validationError != null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.setContentType("application/json");
+            response.getWriter().write(String.format("""
+                    {
+                        "success": false,
+                        "message": "%s"
+                    }
+                    """, validationError));
+            return;
+        }
+
         boolean registered =
                 authService.register(username, password, role);
 

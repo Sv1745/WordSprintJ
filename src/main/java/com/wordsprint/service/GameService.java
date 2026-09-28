@@ -16,10 +16,21 @@ public class GameService {
     private final GuessDAO guessDAO = new GuessDAO();
 
     public Game startGame(Long userId) {
+        com.wordsprint.dao.UserDAO userDAO = new com.wordsprint.dao.UserDAO();
+        if (userDAO.findById(userId) == null) {
+            System.err.println("User ID " + userId + " does not exist.");
+            return null;
+        }
+
+        if (gameDAO.getGamesCountToday(userId) >= 3) {
+            System.err.println("Daily limit reached for user ID " + userId);
+            return null;
+        }
 
         Word word = wordDAO.getRandomWord();
 
         if (word == null) {
+            System.err.println("No words available in the database.");
             return null;
         }
 

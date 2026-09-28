@@ -13,16 +13,20 @@ import javax.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-@WebServlet("login")
+@WebServlet("/login")
 public class LoginServlet extends HttpServlet {
     private final AuthService as = new AuthService();
     private final UserDAO dao = new UserDAO();
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        String uname = req.getParameter("uname");
+        String uname = req.getParameter("username");
+        if (uname == null) {
+            uname = req.getParameter("uname");
+        }
         String pwd = req.getParameter("password");
 
         if (uname == null || pwd == null) {
             res.sendError(HttpServletResponse.SC_BAD_REQUEST, "Provide the username and password!");
+            return;
         }
         boolean authenticated = as.login(uname, pwd);
 
@@ -48,7 +52,7 @@ public class LoginServlet extends HttpServlet {
         res.getWriter().write("""
                 {
                     "success": true,
-                    "message": "Login successful
+                    "message": "Login successful"
                 }""");
     }
 }

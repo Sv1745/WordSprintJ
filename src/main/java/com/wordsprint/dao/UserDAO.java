@@ -12,8 +12,6 @@ import java.time.LocalDateTime;
 
 public class UserDAO {
 
-    private final Connection con = DBConnection.getConnection();
-
     public boolean createUser(
             String uname,
             String passwordHash,
@@ -27,7 +25,12 @@ public class UserDAO {
                 VALUES (?, ?, ?, ?)
                 """;
 
-        try (PreparedStatement ps = con.prepareStatement(query)) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null) {
+
+            if (con == null || ps == null) {
+                return false;
+            }
 
             ps.setString(1, uname);
             ps.setString(2, passwordHash);
@@ -50,9 +53,12 @@ public class UserDAO {
                 WHERE uname = ?
                 """;
 
-        try (
-                PreparedStatement ps = con.prepareStatement(query)
-        ) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null) {
+
+            if (con == null || ps == null) {
+                return null;
+            }
 
             ps.setString(1, uname);
 
@@ -90,9 +96,12 @@ public class UserDAO {
                 WHERE user_id = ?
                 """;
 
-        try (
-                PreparedStatement ps = con.prepareStatement(query)
-        ) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null) {
+
+            if (con == null || ps == null) {
+                return null;
+            }
 
             ps.setLong(1, userId);
 
@@ -120,5 +129,41 @@ public class UserDAO {
         }
 
         return null;
+    }
+
+    public boolean updateUser(Long userId, String newUname, String newPasswordHash) {
+        StringBuilder sb = new StringBuilder("UPDATE users SET ");
+        java.util.List<Object> params = new java.util.ArrayList<>();
+
+        if (newUname != null && !newUname.trim().isEmpty()) {
+            sb.append("uname = ?");
+            params.add(newUname.trim());
+        }
+
+        if (newPasswordHash != null && !newPasswordHash.trim().isEmpty()) {
+            if (!params.isEmpty()) sb.append(", ");
+            sb.append("pwd_hash = ?");
+            params.add(newPasswordHash);
+        }
+
+        if (params.isEmpty()) return false;
+
+        sb.append(" WHERE user_id = ?");
+        params.add(userId);
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(sb.toString()) : null) {
+
+            if (con == null || ps == null) return false;
+
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

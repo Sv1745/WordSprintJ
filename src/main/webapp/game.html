@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordSprint - Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>WordSprint</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="profile.html">Profile</a>
+            <a href="game.html">Play Game</a>
+            <button id="logout-button" class="btn btn-danger">Logout</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="card game-container">
+            <div class="game-header">
+                <h2>Play WordSprint</h2>
+                <div class="game-info">
+                    <span>Attempts: <span id="attempt-count">0</span>/6</span>
+                    <span>Status: <span id="game-status">IDLE</span></span>
+                </div>
+            </div>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <!-- Start Game Control -->
+            <div id="start-section" class="button-group">
+                <button id="start-game-button" class="btn btn-primary">Start New Game</button>
+            </div>
+
+            <!-- Game Grid Board (6 rows x 5 tiles) -->
+            <div id="game-board" class="game-board">
+                <div class="board-row" data-row="1">
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                </div>
+                <div class="board-row" data-row="2">
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                </div>
+                <div class="board-row" data-row="3">
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                </div>
+                <div class="board-row" data-row="4">
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                </div>
+                <div class="board-row" data-row="5">
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                    <div class="tile"></div>
+                </div>
+            </div>
+
+            <!-- Guess Submission Form -->
+            <form id="guess-form" class="form" style="display: none;">
+                <div class="form-group">
+                    <label for="guess-input">Enter 5-Letter Word</label>
+                    <input type="text" id="guess-input" maxlength="5" minlength="5" placeholder="e.g. APPLE" required
+                        style="text-transform: uppercase;">
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Guess</button>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>WordSprint. Java Web Application.</p>
+    </footer>
+
+    <script src="js/game.js"></script>
+</body>
+
+</html>

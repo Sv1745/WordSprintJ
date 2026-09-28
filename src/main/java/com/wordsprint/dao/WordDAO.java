@@ -10,8 +10,6 @@ import java.sql.SQLException;
 
 public class WordDAO {
 
-    private final Connection con = DBConnection.getConnection();
-
     public Word findById(Long wordId) {
 
         String query = """
@@ -20,9 +18,12 @@ public class WordDAO {
                 WHERE word_id = ?
                 """;
 
-        try (
-                PreparedStatement ps = con.prepareStatement(query)
-        ) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null) {
+
+            if (con == null || ps == null) {
+                return null;
+            }
 
             ps.setLong(1, wordId);
 
@@ -46,7 +47,34 @@ public class WordDAO {
         return null;
     }
 
+    public void seedWordsIfEmpty() {
+        String countQuery = "SELECT COUNT(*) FROM words";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(countQuery) : null;
+             ResultSet rs = ps != null ? ps.executeQuery() : null) {
+
+            if (rs != null && rs.next() && rs.getInt(1) < 20) {
+                String[] defaultWords = {
+                    "APPLE", "BRAIN", "CHAIR", "DREAM", "EARTH",
+                    "FLAME", "GRAPE", "HEART", "IMAGE", "JUICE",
+                    "KNIFE", "LIGHT", "MUSIC", "NIGHT", "OCEAN",
+                    "PLANT", "QUEEN", "RIGHT", "SMILE", "TRAIN"
+                };
+                String insertQuery = "INSERT INTO words (word) VALUES (?) ON CONFLICT (word) DO NOTHING";
+                try (PreparedStatement insertPs = con.prepareStatement(insertQuery)) {
+                    for (String w : defaultWords) {
+                        insertPs.setString(1, w);
+                        insertPs.executeUpdate();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Word getRandomWord() {
+        seedWordsIfEmpty();
 
         String query = """
                 SELECT word_id, word
@@ -55,19 +83,24 @@ public class WordDAO {
                 LIMIT 1
                 """;
 
-        try (
-                PreparedStatement ps = con.prepareStatement(query);
-                ResultSet rs = ps.executeQuery()
-        ) {
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null) {
 
-            if (rs.next()) {
+            if (con == null || ps == null) {
+                return null;
+            }
 
-                Word word = new Word();
+            try (ResultSet rs = ps.executeQuery()) {
 
-                word.setWordId(rs.getLong("word_id"));
-                word.setWord(rs.getString("word"));
+                if (rs.next()) {
 
-                return word;
+                    Word word = new Word();
+
+                    word.setWordId(rs.getLong("word_id"));
+                    word.setWord(rs.getString("word"));
+
+                    return word;
+                }
             }
 
         } catch (SQLException e) {
