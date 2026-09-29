@@ -1,6 +1,6 @@
-# WordSprint — Java Enterprise Backend
+# WordSprint — Java Backend
 
-WordSprint is a web-based word guessing application built with **Java 17**, **Java Servlet API 4.0.1 (`javax.servlet`)**, **Apache Tomcat 9**, **JDBC**, and a **PostgreSQL** relational database. Players guess a secret 5-letter word within a configurable number of attempts (default: 5) and receive letter-by-letter visual feedback (Green = Correct position, Yellow = Present in word, Gray = Absent).
+Guess the Word is a word-guessing game implemented as part of the WordSprint project. WordSprint is a web-based word guessing application built with **Java 17**, **Java Servlet API 4.0.1 (`javax.servlet`)**, **Apache Tomcat 9**, **JDBC**, and a **PostgreSQL** relational database. Players guess a secret 5-letter word within a configurable number of attempts (default: 5) and receive letter-by-letter visual feedback (Green = Correct position, Yellow = Present in word, Gray = Absent).
 
 ---
 
@@ -54,7 +54,7 @@ WordSprint/
 
 ---
 
-## 🔌 API Endpoint Specifications (Tomcat Base URL: `http://localhost:8080/WordSprint`)
+## 🔌 API Endpoint Specifications (Tomcat Base URL: `http://localhost:8080/wordsprint`)
 
 | Endpoint Path | HTTP Method | Auth Level | Purpose / Description |
 | :--- | :---: | :---: | :--- |
