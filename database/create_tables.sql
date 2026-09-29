@@ -82,3 +82,16 @@ CREATE TABLE guesses (
                          CONSTRAINT chk_guesses_result
                              CHECK (LENGTH(result) = 5)
 );
+
+
+CREATE TABLE IF NOT EXISTS game_config (
+    config_id INT PRIMARY KEY DEFAULT 1,
+    max_attempts INT NOT NULL DEFAULT 5,
+    max_daily_games INT NOT NULL DEFAULT 3,
+    game_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+    CONSTRAINT chk_single_config CHECK (config_id = 1)
+);
+
+INSERT INTO game_config (config_id, max_attempts, max_daily_games, game_enabled)
+VALUES (1, 5, 3, TRUE)
+ON CONFLICT (config_id) DO NOTHING;

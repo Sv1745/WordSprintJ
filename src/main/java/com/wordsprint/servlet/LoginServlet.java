@@ -42,6 +42,11 @@ public class LoginServlet extends HttpServlet {
 
         User user = dao.findByUsername(uname);
         res.setContentType("application/json");
+
+        HttpSession existingSession = req.getSession(false);
+        if (existingSession != null) {
+            existingSession.invalidate();
+        }
         HttpSession session = req.getSession(true);
         session.setAttribute("user_id", user.getUserId());
         session.setAttribute("uname", user.getUserName());
