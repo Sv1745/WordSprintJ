@@ -26,6 +26,10 @@ public class AuthService {
         return null;
     }
 
+    public boolean register(String uname, String password) {
+        return register(uname, password, "player");
+    }
+
     public boolean register(String uname, String password, String role) {
         UserDAO dao = new UserDAO();
         User user = dao.findByUsername(uname);

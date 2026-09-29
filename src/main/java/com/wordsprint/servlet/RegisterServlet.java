@@ -22,12 +22,11 @@ public class RegisterServlet extends HttpServlet {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        String role = request.getParameter("role");
 
-        if (username == null || password == null || role == null) {
+        if (username == null || password == null) {
             response.sendError(
                     HttpServletResponse.SC_BAD_REQUEST,
-                    "Username, password and role are required"
+                    "Username and password are required"
             );
             return;
         }
@@ -45,8 +44,9 @@ public class RegisterServlet extends HttpServlet {
             return;
         }
 
+        // Public registrations are strictly forced to 'player' role
         boolean registered =
-                authService.register(username, password, role);
+                authService.register(username, password, "player");
 
         response.setContentType("application/json");
 
