@@ -74,7 +74,7 @@ CREATE TABLE guesses (
                              UNIQUE (game_id, guess_number),
 
                          CONSTRAINT chk_guesses_number
-                             CHECK (guess_number BETWEEN 1 AND 6),
+                             CHECK (guess_number BETWEEN 1 AND 20),
 
                          CONSTRAINT chk_guesses_word_length
                              CHECK (LENGTH(guessed_word) = 5),
