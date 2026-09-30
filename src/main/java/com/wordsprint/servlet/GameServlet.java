@@ -104,6 +104,15 @@ public class GameServlet extends HttpServlet {
 
             com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
             com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+            int maxAttempts = config.getMaxAttempts();
+
+            // If game is IN_PROGRESS but recorded guesses already reach or exceed current max attempts limit
+            if ("IN_PROGRESS".equalsIgnoreCase(game.getStatus()) && guesses.size() >= maxAttempts) {
+                gameService.endGame(gameId, "LOST");
+                game.setStatus("LOST");
+            }
+
+            int boardRows = Math.max(maxAttempts, guesses.size());
 
             response.setContentType("application/json");
             response.setStatus(HttpServletResponse.SC_OK);
@@ -114,7 +123,8 @@ public class GameServlet extends HttpServlet {
             sb.append("\"gameId\": ").append(game.getGameId()).append(",");
             sb.append("\"userId\": ").append(game.getUserId()).append(",");
             sb.append("\"status\": \"").append(game.getStatus()).append("\",");
-            sb.append("\"maxAttempts\": ").append(config.getMaxAttempts()).append(",");
+            sb.append("\"maxAttempts\": ").append(maxAttempts).append(",");
+            sb.append("\"boardRows\": ").append(boardRows).append(",");
             sb.append("\"guesses\": [");
             for (int i = 0; i < guesses.size(); i++) {
                 com.wordsprint.model.Guess g = guesses.get(i);

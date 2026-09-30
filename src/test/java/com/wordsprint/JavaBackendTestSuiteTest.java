@@ -9,6 +9,7 @@ import org.junit.jupiter.api.*;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -38,7 +39,11 @@ public class JavaBackendTestSuiteTest {
 
     @AfterEach
     public void resetConfig() {
-        adminDAO.updateConfig(new GameConfig(5, 10, true));
+        adminDAO.updateConfig(new GameConfig(5, 3, true));
+    }
+
+    private String uniqueUser(String prefix) {
+        return prefix + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
     }
 
     // ==========================================
@@ -48,7 +53,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(1)
     public void testJavaAuth001ValidRegistration() {
-        String uname = "RegVal" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("RegVal");
         boolean registered = authService.register(uname, "Pass123!$%*@#&", "player");
         assertTrue(registered, "Registration should succeed for valid credentials");
     }
@@ -63,7 +68,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(3)
     public void testJavaAuth003DuplicateUsername() {
-        String uname = "DupUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("DupUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         boolean dupReg = authService.register(uname, "Pass123!$%*@#&", "player");
         assertFalse(dupReg, "Duplicate registration should fail");
@@ -79,7 +84,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(5)
     public void testJavaAuth005ValidLogin() {
-        String uname = "LogVal" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("LogVal");
         String pwd = "Pass123!$%*@#&";
         authService.register(uname, pwd, "player");
         boolean loginSuccess = authService.login(uname, pwd);
@@ -96,7 +101,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(7)
     public void testJavaAuth007PasswordHashNeverExposed() {
-        String uname = "NoHashUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("NoHashUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         assertNotNull(u);
@@ -111,7 +116,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(10)
     public void testJavaAuthz001PlayerRoleVerification() {
-        String uname = "PlayerRoleUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("PlayerRole");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         assertEquals("player", u.getUserRole());
@@ -132,7 +137,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(20)
     public void testJavaGame001StartGame() {
-        String uname = "GameUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("GameUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         
@@ -144,7 +149,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(21)
     public void testJavaGame002RecordAndRetrieveGuess() {
-        String uname = "GuessUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("GuessUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         
@@ -160,7 +165,7 @@ public class JavaBackendTestSuiteTest {
     @Test
     @Order(22)
     public void testJavaGame003GameWon() {
-        String uname = "WinUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("WinUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         
@@ -208,7 +213,7 @@ public class JavaBackendTestSuiteTest {
     private void runMaxAttemptsTest(int maxAttempts) {
         adminDAO.updateConfig(new GameConfig(maxAttempts, 20, true));
         
-        String uname = "MaxAttUser" + maxAttempts + "_" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("MaxAtt" + maxAttempts + "_");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
         
@@ -235,7 +240,7 @@ public class JavaBackendTestSuiteTest {
     public void testJavaDailyGameLimit() {
         adminDAO.updateConfig(new GameConfig(5, 3, true));
         
-        String uname = "DailyUser" + System.currentTimeMillis() % 10000;
+        String uname = uniqueUser("DailyUser");
         authService.register(uname, "Pass123!$%*@#&", "player");
         User u = userDAO.findByUsername(uname);
 

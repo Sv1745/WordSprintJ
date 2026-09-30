@@ -39,6 +39,12 @@ public class ProfileServlet extends HttpServlet {
             return;
         }
 
+        com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+        com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+        int maxDailyGames = config.getMaxDailyGames();
+        int gamesToday = gameDAO.getGamesCountToday(userId);
+        int dailyGamesLeft = Math.max(0, maxDailyGames - gamesToday);
+
         List<Game> games = gameDAO.findGamesByUserId(userId);
 
         int totalGames = games.size();
@@ -66,7 +72,10 @@ public class ProfileServlet extends HttpServlet {
         sb.append("\"totalGames\": ").append(totalGames).append(",");
         sb.append("\"wins\": ").append(wins).append(",");
         sb.append("\"losses\": ").append(losses).append(",");
-        sb.append("\"inProgress\": ").append(inProgress);
+        sb.append("\"inProgress\": ").append(inProgress).append(",");
+        sb.append("\"gamesToday\": ").append(gamesToday).append(",");
+        sb.append("\"maxDailyGames\": ").append(maxDailyGames).append(",");
+        sb.append("\"dailyGamesLeft\": ").append(dailyGamesLeft);
         sb.append("},");
 
         sb.append("\"games\": [");

@@ -9,13 +9,17 @@ Guess the Word is a word-guessing game implemented as part of the WordSprint pro
 ### Player Features
 - **User Authentication**: Secure registration and login with salted BCrypt password hashing (`$2b$12$`) and HTTP session management.
 - **Word Evaluation Engine**: 2-pass feedback computation (Green / Yellow / Gray) for 5-letter uppercase guesses.
-- **Player Profile & History**: Summary statistics (total games played, total wins, total losses, in-progress games) and complete historical game logs.
-- **Daily Game Limits**: Configurable maximum daily games per player (default: 3).
+- **Daily Games Remaining Tracker**: Real-time dashboard tracker showing remaining games allowed for the day (`X / Y Daily Games Left`).
+- **Date & Status Match Filtering**: Interactive filtering in player dashboard to filter active & historical games by specific date and status (`ALL`, `WON`, `LOST`, `IN_PROGRESS`).
+- **Resumable Game Sessions**: Seamlessly resume in-progress games with dynamic attempt ceiling adjustment and exceeded limit detection.
+- **Interactive Gameplay UI**: Floating rules & color-code helper modal positioned directly on the game canvas.
+- **Player Profile & History**: Summary statistics (total games played, wins, losses, win rate) and complete historical game logs.
 
 ### Admin Features
 - **Control Panel**: Administrative dashboard restricted to users with the `admin` role.
-- **Dynamic Configuration Tuning**: Real-time adjustment of `maxAttempts` (default: 5, range: 1–10), `maxDailyGames` (default: 3, range: 1–50), and global `gameEnabled` toggle without server restarts.
-- **System Reports**: Platform-wide player metrics, game statistics, and daily activity reports.
+- **Dynamic Configuration Tuning**: Real-time adjustment of `maxAttempts` (default: 5, range: 1–20), `maxDailyGames` (default: 3, range: 1–50), and global `gameEnabled` toggle without server restarts.
+- **Advanced Report Filtering**: Multi-dimensional report filtering by date, match status (`ALL`, `WON`, `LOST`, `IN_PROGRESS`), and live player username search across Match Activity, Daily System Activity, User Daily Activity, and Player Directory tables.
+- **Granular Match Auditing**: Detailed match-level logs with secret target word, guesses sequence, timestamps, and outcome.
 
 ---
 

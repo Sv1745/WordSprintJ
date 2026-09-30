@@ -35,6 +35,7 @@ public class AdminReportServlet extends HttpServlet {
         List<Map<String, Object>> reports = adminService.getPlayerReports();
         List<Map<String, Object>> dailyReports = adminService.getDailyReports();
         List<Map<String, Object>> userDailyReports = adminService.getUserDailyReports();
+        List<Map<String, Object>> matchReports = adminService.getAllMatchReports();
 
         res.setContentType("application/json");
         res.setStatus(HttpServletResponse.SC_OK);
@@ -90,6 +91,22 @@ public class AdminReportServlet extends HttpServlet {
             sb.append("\"correctGuesses\": ").append(udr.get("correctGuesses"));
             sb.append("}");
             if (i < userDailyReports.size() - 1) sb.append(",");
+        }
+        sb.append("],");
+
+        sb.append("\"matchReports\": [");
+        for (int i = 0; i < matchReports.size(); i++) {
+            Map<String, Object> mr = matchReports.get(i);
+            sb.append("{");
+            sb.append("\"gameId\": ").append(mr.get("gameId")).append(",");
+            sb.append("\"username\": \"").append(mr.get("username")).append("\",");
+            sb.append("\"word\": \"").append(mr.get("word")).append("\",");
+            sb.append("\"startedAt\": \"").append(mr.get("startedAt")).append("\",");
+            sb.append("\"completedAt\": \"").append(mr.get("completedAt")).append("\",");
+            sb.append("\"status\": \"").append(mr.get("status")).append("\",");
+            sb.append("\"attempts\": ").append(mr.get("attempts"));
+            sb.append("}");
+            if (i < matchReports.size() - 1) sb.append(",");
         }
         sb.append("]");
 

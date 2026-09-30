@@ -44,6 +44,28 @@ public class GuessServlet extends HttpServlet {
                 return;
             }
 
+            if (!"IN_PROGRESS".equalsIgnoreCase(game.getStatus())) {
+                res.setContentType("application/json");
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.getWriter().write(String.format("{\"success\": false, \"message\": \"Game has already ended with status %s.\", \"status\": \"%s\"}", game.getStatus(), game.getStatus()));
+                return;
+            }
+
+            com.wordsprint.dao.GuessDAO guessDAO = new com.wordsprint.dao.GuessDAO();
+            java.util.List<com.wordsprint.model.Guess> existingGuesses = guessDAO.findGuessesByGameId(gameId);
+
+            com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
+            com.wordsprint.model.GameConfig config = adminDAO.getConfig();
+            int maxAttempts = config.getMaxAttempts();
+
+            if (existingGuesses.size() >= maxAttempts) {
+                gameService.endGame(gameId, "LOST");
+                res.setContentType("application/json");
+                res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                res.getWriter().write(String.format("{\"success\": false, \"message\": \"Maximum guess limit (%d) reached for this game. Game marked as LOST.\", \"status\": \"LOST\"}", maxAttempts));
+                return;
+            }
+
             Word targetWordObj = wordDAO.findById(game.getWordId());
             if (targetWordObj == null) {
                 res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Target word not found");
@@ -92,10 +114,6 @@ public class GuessServlet extends HttpServlet {
             boolean isCorrect = gameService.checkAnswer(userGuess, targetWord);
 
             gameService.recordGuess(gameId, guessNumber, userGuess, result);
-
-            com.wordsprint.dao.AdminDAO adminDAO = new com.wordsprint.dao.AdminDAO();
-            com.wordsprint.model.GameConfig config = adminDAO.getConfig();
-            int maxAttempts = config.getMaxAttempts();
 
             String status = "IN_PROGRESS";
             if (isCorrect) {

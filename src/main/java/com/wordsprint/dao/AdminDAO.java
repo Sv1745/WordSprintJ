@@ -246,4 +246,42 @@ public class AdminDAO {
 
         return reports;
     }
+
+    public List<Map<String, Object>> getAllMatchReports() {
+        List<Map<String, Object>> reports = new ArrayList<>();
+        String query = """
+                SELECT g.game_id, u.uname, w.word, g.started_at, g.completed_at, g.status,
+                       COUNT(gu.guess_id) AS attempts_made
+                FROM games g
+                JOIN users u ON g.user_id = u.user_id
+                LEFT JOIN words w ON g.word_id = w.word_id
+                LEFT JOIN guesses gu ON g.game_id = gu.game_id
+                GROUP BY g.game_id, u.uname, w.word, g.started_at, g.completed_at, g.status
+                ORDER BY g.started_at DESC
+                LIMIT 500
+                """;
+
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement ps = con != null ? con.prepareStatement(query) : null;
+             ResultSet rs = ps != null ? ps.executeQuery() : null) {
+
+            if (rs != null) {
+                while (rs.next()) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("gameId", rs.getLong("game_id"));
+                    map.put("username", rs.getString("uname"));
+                    map.put("word", rs.getString("word") != null ? rs.getString("word") : "-");
+                    map.put("startedAt", rs.getTimestamp("started_at") != null ? rs.getTimestamp("started_at").toLocalDateTime().toString() : "");
+                    map.put("completedAt", rs.getTimestamp("completed_at") != null ? rs.getTimestamp("completed_at").toLocalDateTime().toString() : "-");
+                    map.put("status", rs.getString("status"));
+                    map.put("attempts", rs.getInt("attempts_made"));
+                    reports.add(map);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return reports;
+    }
 }

@@ -26,6 +26,10 @@ public class AdminService {
         return adminDAO.getUserDailyReports();
     }
 
+    public List<Map<String, Object>> getAllMatchReports() {
+        return adminDAO.getAllMatchReports();
+    }
+
     public GameConfig getGameConfig() {
         return adminDAO.getConfig();
     }
